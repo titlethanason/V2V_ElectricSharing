@@ -1,5 +1,6 @@
 import json
-
+from flask import Flask
+app = Flask(__name__)
 class BuyerTransaction:
     def __init__(self, idx, buyerIdx, v, vmin, vmax, bmin, bmax):
         self.status = 'pending'
@@ -101,8 +102,6 @@ class Auctioneer:
         buyerTransaction = self.fetchBuyerTransaction(sellerTransaction.parentTransactionIdx)
         print(buyerTransaction)
         print(sellerTransaction)
-        print('-------------------------------------------')
-        
         sellerTransaction.P = buyerTransaction.vmax/12 + sellerTransaction.cmin/4 + (2*buyerTransaction.v)/3
         sellerTransaction.R = sellerTransaction.cmin/12 + buyerTransaction.vmax/4 + (2*sellerTransaction.c)/3
 
@@ -110,13 +109,15 @@ class Auctioneer:
             print("Transction failed!")
             sellerTransaction.status = "failed"
             print(sellerTransaction)
+            print('----------------------------------------------------')
             return False
         
         sellerTransaction.T = (sellerTransaction.P + sellerTransaction.R)/2
         sellerTransaction.optimalAmount = (((sellerTransaction.cmax - sellerTransaction.c)/sellerTransaction.cmax)*sellerTransaction.smax + ((1-((sellerTransaction.cmax - buyerTransaction.v)/sellerTransaction.cmax))*buyerTransaction.bmax))/2
-        print(((sellerTransaction.cmax - sellerTransaction.cmin)/sellerTransaction.cmax)*sellerTransaction.smax)
+        print("Transction accepted!")
         sellerTransaction.status = 'accepted'
         print(sellerTransaction)
+        print('----------------------------------------------------')
         return True
     
     def completeBuyerTransaction(self, sellerTransactionIdx):
@@ -196,4 +197,13 @@ auctioneer.sellerTransaction = dummySellerTransaction
 for transaction in auctioneer.sellerTransaction:
     auctioneer.computeSellerResponse(transaction.idx)
 
+@app.route('/<id>')
+def index(id):
+    global auctioneer
+    output = auctioneer.getBuyerPendingTransaction(int(id))
+    return str(output)
+
+if __name__ == '__main__':
+  app.debug = True
+  app.run(host='127.0.0.1', port=8000)	
         
