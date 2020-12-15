@@ -182,6 +182,17 @@ class Auctioneer:
     def getAuctioneerFailedTransaction(self):
         return [transaction.__dict__ for transaction in self.sellerTransaction if transaction.status == 'failed']
 
+    def createBuyerTransaction(self, transactionIdx, buyerIdx, v, vmin, vmax, bmin, bmax):
+        newTransaction = BuyerTransaction(transactionIdx, buyerIdx, v, vmin, vmax, bmin, bmax)
+        self.buyerTransaction.append(newTransaction)
+        return True
+    
+    def createSellerTransaction(self, transactionIdx, parentTransactionIdx, sellerIdx,  c, cmin, cmax, smin, smax):
+        newTransaction = SellerTransaction(transactionIdx, parentTransactionIdx, sellerIdx,  c, cmin, cmax, smin, smax)
+        self.sellerTransaction.append(newTransaction)
+        self.computeSellerResponse(newTransaction.idx)
+        return True
+
 dummyBuyerTransaction = [BuyerTransaction(1, 1, v=10, vmin=1, vmax=10, bmin=30, bmax=150),
     BuyerTransaction(2, 1, v=10, vmin=2, vmax=20, bmin=10, bmax=100),
     BuyerTransaction(3, 2, v=30, vmin=3, vmax=30, bmin=20, bmax=200),
