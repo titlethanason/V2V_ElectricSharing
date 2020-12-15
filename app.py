@@ -1,6 +1,9 @@
+from flask import Flask, render_template
+from flask_bootstrap import Bootstrap
 import json
-from flask import Flask
 app = Flask(__name__)
+Bootstrap(app)
+
 class BuyerTransaction:
     def __init__(self, idx, buyerIdx, v, vmin, vmax, bmin, bmax):
         self.status = 'pending'
@@ -16,6 +19,15 @@ class BuyerTransaction:
     def __repr__(self):
         return "status: {}, idx: {}, buyerIdx: {}, v: {}, vmax: {}, vmin: {}, bmin: {}, bmax: {}".format(self.status,
         self.idx, self.buyerIdx, self.v,  self.vmax, self.vmin, self.bmin, self.bmax) 
+    
+    def changeStatusToAccepted(self):
+        self.status = 'accepted'
+        print('Seller transaction: '+str(self.idx)+' , status has been changed to "Accepted"')
+
+    def changeStatusToComplete(self):
+        self.status = 'completed'
+        print('Buyer transaction: '+str(self.idx)+' , status has been changed to "Completed"')
+
 class SellerTransaction:
     def __init__(self, idx, parentTransactionIdx, sellerIdx, c, cmin, cmax, smin, smax):
         self.status = 'pending'
@@ -35,6 +47,7 @@ class SellerTransaction:
     def __repr__(self):
         return "status: {}, idx: {}, sellerIdx: {}, parentTransactionIdx: {}, c: {}, cmax: {}, cmin: {}, smin: {}, smax: {}, P: {}, R: {}, T: {}, amount: {} ".format(self.status,
         self.idx, self.sellerIdx, self.parentTransactionIdx, self.c,  self.cmax, self.cmin, self.smin, self.smax, self.P, self.R, self.T, self.optimalAmount)
+
 class Buyer:
     def __init__(self, coordinate, idx):
         self.coordinate = coordinate
@@ -116,7 +129,7 @@ class Auctioneer:
         if(sellerTransaction.status == 'accepted'):
             sellerTransaction.status = 'complete'
             buyerTransaction.status = 'complete'
-            buyerTransaction.agreedTransactionTdx = sellerTransaction.idx
+            buyerTransaction.agreedTransactionIdx = sellerTransaction.idx
             return True
         else: return False
         
@@ -131,7 +144,7 @@ class Auctioneer:
     
     def getBuyerPendingTransaction(self, idx):
         b_transaction = []
-        for buyerTransaction in [transaction.__dict__ for transaction in self.buyerTransaction if transaction.buyerIdx == idx]:
+        for buyerTransaction in [transaction.__dict__ for transaction in self.buyerTransaction if transaction.buyerIdx == idx and transaction.status == 'pending']:
             b_transaction.append(buyerTransaction)
             for sellerTransaction in [transaction.__dict__ for transaction in self.sellerTransaction if transaction.parentTransactionIdx == buyerTransaction['idx'] and transaction.status == 'accepted']:
                 b_transaction.append(sellerTransaction)
@@ -169,17 +182,6 @@ class Auctioneer:
     def getAuctioneerFailedTransaction(self):
         return [transaction.__dict__ for transaction in self.sellerTransaction if transaction.status == 'failed']
 
-    def createBuyerTransaction(self, transactionIdx, buyerIdx, v, vmin, vmax, bmin, bmax):
-        newTransaction = BuyerTransaction(transactionIdx, buyerIdx, v, vmin, vmax, bmin, bmax)
-        self.buyerTransaction.append(newTransaction)
-        return True
-    
-    def createSellerTransaction(self, transactionIdx, parentTransactionIdx, sellerIdx,  c, cmin, cmax, smin, smax):
-        newTransaction = SellerTransaction(transactionIdx, parentTransactionIdx, sellerIdx,  c, cmin, cmax, smin, smax)
-        self.sellerTransaction.append(newTransaction)
-        self.computeSellerResponse(newTransaction.idx)
-        return True
-
 dummyBuyerTransaction = [BuyerTransaction(1, 1, v=10, vmin=1, vmax=10, bmin=30, bmax=150),
     BuyerTransaction(2, 1, v=10, vmin=2, vmax=20, bmin=10, bmax=100),
     BuyerTransaction(3, 2, v=30, vmin=3, vmax=30, bmin=20, bmax=200),
@@ -197,14 +199,57 @@ auctioneer.buyerTransaction = dummyBuyerTransaction
 auctioneer.sellerTransaction = dummySellerTransaction
 for transaction in auctioneer.sellerTransaction:
     auctioneer.computeSellerResponse(transaction.idx)
+auctioneer.completeBuyerTransaction(1)
 
-@app.route('/<id>')
-def index(id):
+@app.route('/buyer/<id>')
+def buyer(id):
     global auctioneer
-    output = auctioneer.getBuyerPendingTransaction(int(id))
-    return json.dumps(output)
+    pending = auctioneer.getBuyerPendingTransaction(int(id))
+    complete = auctioneer.getBuyerCompletedTransaction(int(id))
+    print(pending)
+    return render_template('buyer.html',title='buyer',id=id, pending=pending,complete=complete)
+
+# def get_pending_buyer():
+#     data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"},{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"},{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"}]
+#     return data
+
+def get_complete_buyer():
+    data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Complete"}]
+    return data
+
+@app.route('/seller/<id>')
+def seller(id):
+    pending = get_pending_seller()
+    accept = get_accept_seller()
+    complete = get_complete_seller()
+    return render_template('seller.html',title='seller',id=id, pending=pending,accept=accept,complete=complete)
+
+def get_pending_seller():
+    data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"},{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"},{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"}]
+    return data
+
+def get_accept_seller():
+    data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Accepted"}]
+    return data
+
+def get_complete_seller():
+    data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Complete"},{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Fail"}]
+    return data
+
+@app.route('/auctioneer/<id>')
+def index(id):
+    pending = get_pending_auctioneer()
+    complete = get_complete_auctioneer()
+    return render_template('auctioneer.html',title='auctioneer',id=id,pending=pending,complete=complete)
+
+def get_pending_auctioneer():
+    data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"}]
+    return data
+
+def get_complete_auctioneer():
+    data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Complete"},{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Fail"}]
+    return data
+
 
 if __name__ == '__main__':
-  app.debug = True
-  app.run(host='127.0.0.1', port=8000)	
-        
+    app.run(debug=True)	

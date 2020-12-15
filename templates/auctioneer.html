@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+   <head>
+        <title> {{ title }}</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+   </head>
+   <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Auctioneer {{ id }}</a>
+    </nav>
+    <div class="container mb-5">
+        <div class="row mt-5">
+            <div class="col-6 text-center">
+                <button type="button" data-toggle="collapse" href="#PendingCollapse" class="btn btn-dark" >Pending</button>
+            </div>
+            <div class="col-6 text-center">
+                <button type="button" data-toggle="collapse" href="#CompleteCollapse" class="btn btn-dark" >Complete/Fail</button>
+            </div>
+        </div>
+        <div class="collapse mt-3" id="PendingCollapse">
+            <h2>Pending</h2>
+            <div class="card-deck">
+                {% for data in pending %}
+                    <div class="card" style="max-width: 18rem;">
+                        <div class="card-body">
+                            <p>Pending #{{ loop.index0+1 }}</p>
+                            <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.MinQuantity }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.MaxQuantity }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.MaxCost }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ data.MinCost }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ data.DesiredCost }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Status : {{ data.status }}</p></div>
+                        </div>
+                    </div>
+                {% endfor %} 
+            </div>
+        </div>
+        <!-- <div class="collapse mt-3" id="AccepetedCollapse">
+            <h2>Accepeted</h2>
+            <div class="card-deck">
+                <div class="card" style="max-width: 18rem;">
+                    <div class="card-body">
+                        <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ id }}</p></div>
+                        <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ id }}</p></div>
+                        <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ id }}</p></div>
+                        <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ id }}</p></div>
+                        <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ id }}</p></div>
+                        <div class="row"><p class="card-text ml-2">Status : {{ id }}</p></div>
+                        <div class="mt-1 text-center"><a href="#" class="btn btn-primary">Accept</a></div>
+                    </div>
+                    </div>
+                    <div class="card" style="max-width: 18rem;">
+                    <div class="card-body">
+                        <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ id }}</p></div>
+                        <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ id }}</p></div>
+                        <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ id }}</p></div>
+                        <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ id }}</p></div>
+                        <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ id }}</p></div>
+                        <div class="row"><p class="card-text ml-2">Status : {{ id }}</p></div>
+                        <div class="mt-1 text-center"><a href="#" class="btn btn-primary">Accept</a></div>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <div class="collapse mt-3" id="CompleteCollapse">
+            <h2>Complete/Fail</h2>
+            <div class="card-deck">
+                {% for data in complete %}
+                    <div class="card" style="max-width: 18rem;">
+                        <div class="card-body">
+                            <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.MinQuantity }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.MaxQuantity }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.MaxCost }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ data.MinCost }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ data.DesiredCost }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Status : {{ data.status }}</p></div>
+                        </div>
+                    </div>
+                {% endfor %} 
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+    </script> 
+   </body>
+</html>
