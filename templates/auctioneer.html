@@ -15,69 +15,77 @@
     </nav>
     <div class="container mb-5">
         <div class="row mt-5">
-            <div class="col-6 text-center">
+            <div class="col-4 text-center">
                 <button type="button" data-toggle="collapse" href="#PendingCollapse" class="btn btn-dark" >Pending</button>
             </div>
-            <div class="col-6 text-center">
-                <button type="button" data-toggle="collapse" href="#CompleteCollapse" class="btn btn-dark" >Complete/Fail</button>
+            <div class="col-4 text-center">
+                <button type="button" data-toggle="collapse" href="#CompletedCollapse" class="btn btn-dark" >Completed</button>
+            </div>
+            <div class="col-4 text-center">
+                <button type="button" data-toggle="collapse" href="#FailedCollapse" class="btn btn-dark" >Failed</button>
             </div>
         </div>
-        <div class="collapse mt-3" id="PendingCollapse">
+        <div class="collapse mt-5 text-center" id="PendingCollapse">
             <h2>Pending</h2>
-            <div class="card-deck">
+            <div class="card-columns mt-3">
                 {% for data in pending %}
+                    {% if data.status == 'pending' %}
                     <div class="card" style="max-width: 18rem;">
                         <div class="card-body">
-                            <p>Pending #{{ loop.index0+1 }}</p>
-                            <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.MinQuantity }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.MaxQuantity }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.MaxCost }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ data.MinCost }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ data.DesiredCost }}</p></div>
+                            <p>Buyer's Transaction #{{ data.idx }}</p>
+                            <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.bmin }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.bmax }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.vmin }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ data.vmax }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ data.v }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Status : {{ data.status }}</p></div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="card" style="max-width: 18rem;">
+                        <div class="card-body">
+                            <p>Seller's Transaction #{{ data.idx }}</p>
+                            <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.smin }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.smax }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.cmin }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ data.cmax }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ data.c }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Status : {{ data.status }}</p></div>
+                        </div>
+                    </div>
+                    {% endif%}
+                {% endfor %} 
+            </div>
+        </div>
+        <div class="collapse mt-5 text-center" id="CompletedCollapse">
+            <h2>Completed</h2>
+            <div class="card-columns">
+                {% for data in complete %}
+                    <div class="card" style="max-width: 18rem;">
+                        <div class="card-body">
+                            <p>Transaction #{{ data.idx }}</p>
+                            <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.smin }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.smax }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.cmin }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ data.cmax }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ data.c }}</p></div>
                             <div class="row"><p class="card-text ml-2">Status : {{ data.status }}</p></div>
                         </div>
                     </div>
                 {% endfor %} 
             </div>
         </div>
-        <!-- <div class="collapse mt-3" id="AccepetedCollapse">
-            <h2>Accepeted</h2>
-            <div class="card-deck">
-                <div class="card" style="max-width: 18rem;">
-                    <div class="card-body">
-                        <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ id }}</p></div>
-                        <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ id }}</p></div>
-                        <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ id }}</p></div>
-                        <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ id }}</p></div>
-                        <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ id }}</p></div>
-                        <div class="row"><p class="card-text ml-2">Status : {{ id }}</p></div>
-                        <div class="mt-1 text-center"><a href="#" class="btn btn-primary">Accept</a></div>
-                    </div>
-                    </div>
-                    <div class="card" style="max-width: 18rem;">
-                    <div class="card-body">
-                        <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ id }}</p></div>
-                        <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ id }}</p></div>
-                        <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ id }}</p></div>
-                        <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ id }}</p></div>
-                        <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ id }}</p></div>
-                        <div class="row"><p class="card-text ml-2">Status : {{ id }}</p></div>
-                        <div class="mt-1 text-center"><a href="#" class="btn btn-primary">Accept</a></div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-        <div class="collapse mt-3" id="CompleteCollapse">
-            <h2>Complete/Fail</h2>
-            <div class="card-deck">
-                {% for data in complete %}
+        <div class="collapse mt-5 text-center" id="FailedCollapse">
+            <h2>Failed</h2>
+            <div class="card-columns mt-3">
+                {% for data in fail %}
                     <div class="card" style="max-width: 18rem;">
                         <div class="card-body">
-                            <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.MinQuantity }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.MaxQuantity }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.MaxCost }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ data.MinCost }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ data.DesiredCost }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.smin }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.smax }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.cmin }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ data.cmax }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ data.c }}</p></div>
                             <div class="row"><p class="card-text ml-2">Status : {{ data.status }}</p></div>
                         </div>
                     </div>

@@ -25,81 +25,77 @@
                 <button type="button" data-toggle="collapse" href="#CompleteCollapse" class="btn btn-dark" >Complete</button>
             </div>
         </div>
-        <div class="collapse mt-3" id="CreateCollapse">
+        <div class="collapse mt-5 text-center" id="CreateCollapse">
             <h2>Create</h2>
-            <div class="card">
-                <div class="card-body">
-                    <form  class="form-horizontal" action="/create/1" method="post">
-                        <div class="form-group">
-                            <label for="electricQuantity">Minimum Quantity</label>
-                            <input type="text" class="form-control" id="MinQuantity" name='bmin'>
-                        </div>
-                        <div class="form-group">
-                            <label for="electricQuantity">Maximum Quantity</label>
-                            <input type="text" class="form-control" id="MaxQuantity" name='bmax'>
-                        </div>
-                        <div class="form-group">
-                            <label for="electricQuantity">Minimum Cost Per Unit</label>
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                  <span class="input-group-text">฿</span>
-                                </div>
-                                <input type="text" class="form-control" id="MinCost" name='vmin'>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="electricQuantity">Maximum Cost Per Unit</label>
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                  <span class="input-group-text">฿</span>
-                                </div>
-                                <input type="text" class="form-control" id="MaxCost"  name='vmax'>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="electricQuantity">Disired Cost Per Unit</label>
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                  <span class="input-group-text">฿</span>
-                                </div>
-                                <input type="text" class="form-control" id="DesireCost" name='v'>
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary" value="Submit">Submit</button>
-                        </div>
-                        
-                    </form>
+            <form  class="form-horizontal mt-3" action="/create/{{ id }}" method="post" style="max-width: fit-content; margin: auto;">
+                <div class="form-group">
+                    <label for="electricQuantity">Minimum Quantity</label>
+                    <input type="text" class="form-control" id="MinQuantity" name='bmin'>
                 </div>
-              </div>
+                <div class="form-group">
+                    <label for="electricQuantity">Maximum Quantity</label>
+                    <input type="text" class="form-control" id="MaxQuantity" name='bmax'>
+                </div>
+                <div class="form-group">
+                    <label for="electricQuantity">Minimum Cost Per Unit</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">฿</span>
+                        </div>
+                        <input type="text" class="form-control" id="MinCost" name='vmin'>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="electricQuantity">Maximum Cost Per Unit</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">฿</span>
+                        </div>
+                        <input type="text" class="form-control" id="MaxCost"  name='vmax'>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="electricQuantity">Disired Cost Per Unit</label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">฿</span>
+                        </div>
+                        <input type="text" class="form-control" id="DesireCost" name='v'>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary" value="Submit">Submit</button>
+                </div>
+            </form>
         </div>
-        <div class="collapse mt-3" id="PendingCollapse">
+        <div class="collapse mt-5 text-center" id="PendingCollapse">
             <h2>Pending/Accept</h2>
-            <div class="card-deck">
+            <div class="card-columns mt-3">
                 {% for data in pending %}
                     {% if data.status == 'pending' %}
                     <div class="card" style="max-width: 18rem;">
                         <div class="card-body">
-                            <p>Pending #{{ loop.index0+1 }}</p>
+                            <p>Buyer's Transaction #{{ data.idx }}</p>
                             <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.bmin }}</p></div>
                             <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.bmax }}</p></div>
                             <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.vmin }}</p></div>
                             <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ data.vmax }}</p></div>
                             <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ data.v }}</p></div>
                             <div class="row"><p class="card-text ml-2">Status : {{ data.status }}</p></div>
+                            <div class="mt-3 text-center"><a href="#" class="btn btn-dark disabled">Pending</a></div>
                         </div>
                     </div>
                     {% else %}
                     <div class="card" style="max-width: 18rem;">
                         <div class="card-body">
-                            <p>Pending #{{ loop.index0+1 }}</p>
+                            <p>Seller's Transaction #{{ data.idx }}</p>
                             <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.smin }}</p></div>
                             <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.smax }}</p></div>
                             <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.cmin }}</p></div>
                             <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ data.cmax }}</p></div>
                             <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ data.c }}</p></div>
                             <div class="row"><p class="card-text ml-2">Status : {{ data.status }}</p></div>
-                            <div class="mt-1 text-center"><a href="#" class="btn btn-primary">Confirm</a></div>
+                            <div class="mt-3 text-center"><a href="#" class="btn btn-primary">Confirm</a></div>
                         </div>
                     </div>
                     {% endif%}
@@ -107,12 +103,13 @@
                 {% endfor %} 
             </div>
         </div>
-        <div class="collapse mt-3" id="CompleteCollapse">
+        <div class="collapse mt-5 text-center" id="CompleteCollapse">
             <h2>Complete</h2>
-            <div class="card-deck">
+            <div class="card-columns mt-3">
                 {% for data in complete %}
                     <div class="card" style="max-width: 18rem;">
                         <div class="card-body">
+                            <p>Transaction #{{ data.idx }}</p>
                             <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.bmin }}</p></div>
                             <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.bmax }}</p></div>
                             <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.vmin }}</p></div>

@@ -224,46 +224,19 @@ def buyer(id):
     print(pending)
     return render_template('buyer.html',title='buyer',id=id, pending=pending,complete=complete)
 
-# def get_pending_buyer():
-#     data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"},{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"},{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"}]
-#     return data
-
-def get_complete_buyer():
-    data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Complete"}]
-    return data
-
 @app.route('/seller/<id>')
 def seller(id):
-    pending = get_pending_seller()
-    accept = get_accept_seller()
-    complete = get_complete_seller()
+    pending = auctioneer.getSellerPendingTransaction(int(id))
+    accept = auctioneer.getSellerAcceptedTransaction(int(id))
+    complete = auctioneer.getSellerCompleltedFailedTransaction(int(id))
     return render_template('seller.html',title='seller',id=id, pending=pending,accept=accept,complete=complete)
-
-def get_pending_seller():
-    data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"},{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"},{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"}]
-    return data
-
-def get_accept_seller():
-    data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Accepted"}]
-    return data
-
-def get_complete_seller():
-    data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Complete"},{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Fail"}]
-    return data
 
 @app.route('/auctioneer/<id>')
 def index(id):
-    pending = get_pending_auctioneer()
-    complete = get_complete_auctioneer()
+    pending = auctioneer.getAuctioneerPendingTransaction()
+    complete = auctioneer.getAuctioneerCompletedTransaction()
+    fail = auctioneer.getAuctioneerFailedTransaction()
     return render_template('auctioneer.html',title='auctioneer',id=id,pending=pending,complete=complete)
-
-def get_pending_auctioneer():
-    data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Pending"}]
-    return data
-
-def get_complete_auctioneer():
-    data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Complete"},{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Fail"}]
-    return data
 
 @app.route('/create/<id>', methods=['POST'])
 def create(id):
