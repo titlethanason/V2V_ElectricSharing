@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 from flask_bootstrap import Bootstrap
 import json
 app = Flask(__name__)
@@ -76,6 +76,8 @@ class Auctioneer:
         self.location = []
         self.buyerTransaction = []
         self.sellerTransaction = []
+        self.countBuyer = 5
+        self.countSeller = 5
         
     def bt(self): return self.buyerTransaction
     def st(self): return self.sellerTransaction
@@ -263,6 +265,23 @@ def get_complete_auctioneer():
     data = [{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Complete"},{"MinQuantity": "3","MaxQuantity": "6","MinCost": "1","MaxCost": "3","DesiredCost": "2","status":"Fail"}]
     return data
 
+@app.route('/create/<id>', methods=['POST'])
+def create(id):
+    global auctioneer
+    v = request.form['v']
+    vmin = request.form['vmax']
+    vmax = request.form['vmax']
+    bmin = request.form['bmin']
+    bmax = request.form['bmax']
+    auctioneer.countBuyer = auctioneer.countBuyer+1
+    auctioneer.createBuyerTransaction(auctioneer.countBuyer, int(id), v, vmin, vmax, bmin, bmax)
+
+    return redirect('/buyer/'+id)
+
+@app.route('/bt')
+def bt():
+    global auctioneer
+    return str(auctioneer.getBuyerPendingTransaction(1))
 
 if __name__ == '__main__':
     app.run(debug=True)	
