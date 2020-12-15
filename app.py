@@ -127,8 +127,8 @@ class Auctioneer:
         sellerTransaction = self.fetchSellerTransaction(sellerTransactionIdx)
         buyerTransaction = self.fetchBuyerTransaction(sellerTransaction.parentTransactionIdx)
         if(sellerTransaction.status == 'accepted'):
-            sellerTransaction.status = 'complete'
-            buyerTransaction.status = 'complete'
+            sellerTransaction.status = 'completed'
+            buyerTransaction.status = 'completed'
             buyerTransaction.agreedTransactionIdx = sellerTransaction.idx
             return True
         else: return False
@@ -153,7 +153,7 @@ class Auctioneer:
     def getBuyerCompletedTransaction(self, idx):
         b_transaction = []
         for buyerTransaction in [transaction.__dict__ for transaction in self.buyerTransaction if transaction.buyerIdx == idx]:
-            if(buyerTransaction['status'] == 'complete'):
+            if(buyerTransaction['status'] == 'completed'):
                 b_transaction.append(buyerTransaction)
         return b_transaction
     
@@ -212,7 +212,7 @@ auctioneer.buyerTransaction = dummyBuyerTransaction
 auctioneer.sellerTransaction = dummySellerTransaction
 for transaction in auctioneer.sellerTransaction:
     auctioneer.computeSellerResponse(transaction.idx)
-auctioneer.completeBuyerTransaction(1)
+#auctioneer.completeBuyerTransaction(1)
 
 @app.route('/buyer/<id>')
 def buyer(id):
