@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect
 from flask_bootstrap import Bootstrap
+import haversine as hs
 import json
 app = Flask(__name__)
 Bootstrap(app)
@@ -43,6 +44,7 @@ class SellerTransaction:
         self.R = None
         self.T = None
         self.optimalAmount = None
+        self.distance = None
 
     def __repr__(self):
         return "status: {}, idx: {}, sellerIdx: {}, parentTransactionIdx: {}, c: {}, cmax: {}, cmin: {}, smin: {}, smax: {}, P: {}, R: {}, T: {}, amount: {} ".format(self.status,
@@ -76,8 +78,10 @@ class Auctioneer:
         self.location = []
         self.buyerTransaction = []
         self.sellerTransaction = []
-        self.countBuyer = 5
-        self.countSeller = 5
+        self.countBuyerTransaction = 5
+        self.countSellerTransaction = 5
+        self.buyers = []
+        self.sellers = []
         
     def bt(self): return self.buyerTransaction
     def st(self): return self.sellerTransaction
@@ -105,6 +109,11 @@ class Auctioneer:
     def computeSellerResponse(self, sellerTransacionIdx):
         sellerTransaction = self.fetchSellerTransaction(sellerTransacionIdx)
         buyerTransaction = self.fetchBuyerTransaction(sellerTransaction.parentTransactionIdx)
+        sellerLocation = self.sellers[sellerTransaction.sellerIdx-1].coordinate
+        buyerLocation = self.buyers[buyerTransaction.buyerIdx-1].coordinate
+        sellerTransaction.distance = round(hs.haversine(sellerLocation,buyerLocation), 2)
+        print("distance = "+str(sellerTransaction.distance)+" km")
+
         print(buyerTransaction)
         print(sellerTransaction)
         sellerTransaction.P = buyerTransaction.vmax/12 + sellerTransaction.cmin/4 + (2*buyerTransaction.v)/3
@@ -195,8 +204,6 @@ class Auctioneer:
         self.computeSellerResponse(newTransaction.idx)
         return True
 
-countBuyer = 5
-countSeller = 5
 dummyBuyerTransaction = [BuyerTransaction(1, 1, v=10, vmin=1, vmax=10, bmin=30, bmax=150),
     BuyerTransaction(2, 1, v=10, vmin=2, vmax=20, bmin=10, bmax=100),
     BuyerTransaction(3, 2, v=30, vmin=3, vmax=30, bmin=20, bmax=200),
@@ -209,7 +216,12 @@ dummySellerTransaction = [SellerTransaction(1, 1, 1, c=3, cmin=1, cmax=30, smin=
     SellerTransaction(4, 4, 4, c=40, cmin=4, cmax=40, smin=30, smax=300),
     SellerTransaction(5, 5, 5, c=50, cmin=5, cmax=50, smin=40, smax=400)]
 
+buyers = [Buyer((13.7203636, 100.4983167), 1), Buyer((13.7210854,100.4952133), 2), Buyer((13.7057435,100.4809689), 3), Buyer((13.6562446,100.4817984), 4), Buyer((13.7213584,100.5305075), 5)]
+sellers = [Seller((13.651362879156872,100.49486250045186),1), Seller((13.7057435,100.4809689), 2), Seller((13.6562446,100.4817984), 3), Seller((13.7213584,100.5305075), 4), Seller((13.7277753,100.5352955), 5)]
+
 auctioneer = Auctioneer()
+auctioneer.buyers = buyers
+auctioneer.sellers = sellers
 auctioneer.buyerTransaction = dummyBuyerTransaction
 auctioneer.sellerTransaction = dummySellerTransaction
 for transaction in auctioneer.sellerTransaction:
@@ -246,8 +258,8 @@ def create(id):
     vmax = request.form['vmax']
     bmin = request.form['bmin']
     bmax = request.form['bmax']
-    auctioneer.countBuyer = auctioneer.countBuyer+1
-    auctioneer.createBuyerTransaction(auctioneer.countBuyer, int(id), v, vmin, vmax, bmin, bmax)
+    auctioneer.countBuyerTransaction = auctioneer.countBuyerTransaction+1
+    auctioneer.createBuyerTransaction(auctioneer.countBuyerTransaction, int(id), v, vmin, vmax, bmin, bmax)
 
     return redirect('/buyer/'+id)
 
