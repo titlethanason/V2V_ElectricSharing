@@ -263,6 +263,13 @@ def create(id):
 
     return redirect('/buyer/'+id)
 
+@app.route('/confirmBuyerTransaction/<id>', methods=['POST'])
+def confirmBuyerTransaction(id):
+    global auctioneer
+    sellerTransactionIdx = int(request.form['idx'])
+    auctioneer.completeBuyerTransaction(sellerTransactionIdx)
+    return redirect('/buyer/'+id)
+
 @app.route('/bt')
 def bt():
     global auctioneer
