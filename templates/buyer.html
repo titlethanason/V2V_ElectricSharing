@@ -76,6 +76,7 @@
                     <div class="card" style="max-width: 18rem;">
                         <div class="card-body">
                             <p>Buyer's Transaction #{{ data.idx }}</p>
+            
                             <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.bmin }}</p></div>
                             <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.bmax }}</p></div>
                             <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.vmin }}</p></div>
@@ -91,11 +92,13 @@
                             <form  class="form-horizontal mt-3" action="/confirmBuyerTransaction/{{ id }}" method="post" style="max-width: fit-content; margin: auto;">
                             <p>Seller's Transaction #{{ data.idx }}</p>
                             <input type="text" value="{{data.idx}}" name="idx" style="display: none">
-                            <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.smin }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.smax }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.cmin }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ data.cmax }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ data.c }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Distance : {{ data.distance }} km.</p></div>
+                            <div class="row"><p class="card-text ml-2">Optimal Price/Unit(T) : {{ data.T }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Seller's Idx : {{ data.sellerIdx }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Buyer's Optimal Price/Unit(P) : {{ data.P }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Seller's Optimal Price/Unit(R) : {{ data.R }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Optimal Quantity : {{ data.optimalAmount }}</p></div>
+                            <div class="row"><p class="card-text ml-2">RefBuyerTransactionIdx : {{ data.parentTransactionIdx }}</p></div>
                             <div class="row"><p class="card-text ml-2">Status : {{ data.status }}</p></div>
                             <div class="mt-3 text-center"><button type="submit" class="btn btn-primary" value="Submit">Confirm</button></div>
                             </form>
@@ -112,12 +115,11 @@
                 {% for data in complete %}
                     <div class="card" style="max-width: 18rem;">
                         <div class="card-body">
-                            <p>Transaction #{{ data.idx }}</p>
-                            <div class="row"><p class="card-text ml-2">Minimum Quantity : {{ data.bmin }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Maximum Quantity : {{ data.bmax }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Minimum Cost/Unit : {{ data.vmin }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Maximum Cost/Unit : {{ data.vmax }}</p></div>
-                            <div class="row"><p class="card-text ml-2">Desired Cost/Unit : {{ data.v }}</p></div>
+                            <p>Buyer's Transaction #{{ data.idx }}</p>
+                            <div class="row"><p class="card-text ml-2">Distance : {{ data.distance }} km.</p></div>
+                            <div class="row"><p class="card-text ml-2">Optimal Price/Unit(T) : {{ data.T }}</p></div>
+                            <div class="row"><p class="card-text ml-2">Optimal Quantity : {{ data.optimalAmount }}</p></div>
+                            <div class="row"><p class="card-text ml-2">AgreedwithransactionIdx : {{ data.agreedTransactionIdx }}</p></div>
                             <div class="row"><p class="card-text ml-2">Status : {{ data.status }}</p></div>
                         </div>
                     </div>

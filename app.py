@@ -16,6 +16,9 @@ class BuyerTransaction:
         self.bmin = bmin
         self.bmax = bmax
         self.agreedTransactionIdx = None
+        self.T = None
+        self.distance = None
+        self.optimalAmount = None
     
     def __repr__(self):
         return "status: {}, idx: {}, buyerIdx: {}, v: {}, vmax: {}, vmin: {}, bmin: {}, bmax: {}".format(self.status,
@@ -105,6 +108,10 @@ class Auctioneer:
         if(sellerTransaction == None): 
             print("Can not find sellerTransaction")
             return False
+    
+    def fetchSellerTransactionsByParentTransactionIdx(self, parentTransactionIdx):
+        return [transaction for transaction in self.sellerTransaction if transaction.parentTransactionIdx == parentTransactionIdx]
+    
         
     def computeSellerResponse(self, sellerTransacionIdx):
         sellerTransaction = self.fetchSellerTransaction(sellerTransacionIdx)
@@ -116,8 +123,8 @@ class Auctioneer:
 
         print(buyerTransaction)
         print(sellerTransaction)
-        sellerTransaction.P = buyerTransaction.vmax/12 + sellerTransaction.cmin/4 + (2*buyerTransaction.v)/3
-        sellerTransaction.R = sellerTransaction.cmin/12 + buyerTransaction.vmax/4 + (2*sellerTransaction.c)/3
+        sellerTransaction.P = round(buyerTransaction.vmax/12 + sellerTransaction.cmin/4 + (2*buyerTransaction.v)/3,2)
+        sellerTransaction.R = round(sellerTransaction.cmin/12 + buyerTransaction.vmax/4 + (2*sellerTransaction.c)/3)
 
         if(sellerTransaction.P < sellerTransaction.R):
             print("Transction failed!")
@@ -127,7 +134,7 @@ class Auctioneer:
             return False
         
         sellerTransaction.T = (sellerTransaction.P + sellerTransaction.R)/2
-        sellerTransaction.optimalAmount = (((sellerTransaction.cmax - sellerTransaction.c)/sellerTransaction.cmax)*sellerTransaction.smax + ((1-((sellerTransaction.cmax - buyerTransaction.v)/sellerTransaction.cmax))*buyerTransaction.bmax))/2
+        sellerTransaction.optimalAmount = round((((sellerTransaction.cmax - sellerTransaction.c)/sellerTransaction.cmax)*sellerTransaction.smax + ((1-((sellerTransaction.cmax - buyerTransaction.v)/sellerTransaction.cmax))*buyerTransaction.bmax))/2)
         print("Transction accepted!")
         sellerTransaction.status = 'accepted'
         print(sellerTransaction)
@@ -141,6 +148,12 @@ class Auctioneer:
             sellerTransaction.status = 'completed'
             buyerTransaction.status = 'completed'
             buyerTransaction.agreedTransactionIdx = sellerTransaction.idx
+            buyerTransaction.T = sellerTransaction.T
+            buyerTransaction.distance = sellerTransaction.distance
+            buyerTransaction.optimalAmount = sellerTransaction.optimalAmount
+            for transaction in self.fetchSellerTransactionsByParentTransactionIdx(sellerTransaction.parentTransactionIdx):
+                if(transaction.idx != sellerTransaction.idx):
+                    transaction.status = 'failed'
             return True
         else: return False
         
@@ -170,10 +183,15 @@ class Auctioneer:
     
     def getSellerPendingTransaction(self, idx):
         b_transaction = []
-        s_transactionIdxs = [sellerTransaction.idx for sellerTransaction in self.sellerTransaction if sellerTransaction.idx == idx]
+        sellerLocation = self.sellers[idx-1].coordinate
+        s_transactionIdxs = [sellerTransaction.parentTransactionIdx for sellerTransaction in self.sellerTransaction if sellerTransaction.sellerIdx == idx]
         for buyerTransaction in self.buyerTransaction:
             if( (buyerTransaction.idx not in s_transactionIdxs) and (buyerTransaction.status == 'pending')):
-                b_transaction.append(buyerTransaction.__dict__)
+                buyerLocation = self.buyers[buyerTransaction.buyerIdx-1].coordinate
+                distance = round(hs.haversine(sellerLocation,buyerLocation), 2)
+                buyerTransactionDict = buyerTransaction.__dict__
+                buyerTransactionDict['distance'] = distance
+                b_transaction.append(buyerTransactionDict)
         return b_transaction
     
     def getSellerAcceptedTransaction(self, idx):
@@ -259,9 +277,25 @@ def create(id):
     bmin = request.form['bmin']
     bmax = request.form['bmax']
     auctioneer.countBuyerTransaction = auctioneer.countBuyerTransaction+1
-    auctioneer.createBuyerTransaction(auctioneer.countBuyerTransaction, int(id), v, vmin, vmax, bmin, bmax)
+    auctioneer.createBuyerTransaction(auctioneer.countBuyerTransaction, int(id), int(v), int(vmin), int(vmax), int(bmin), int(bmax))
 
     return redirect('/buyer/'+id)
+
+@app.route('/response/<id>', methods=['POST'])
+def response(id):
+    global auctioneer
+    c = request.form['c']
+    cmin = request.form['cmax']
+    cmax = request.form['cmax']
+    smin = request.form['smin']
+    smax = request.form['smax']
+    parentIdx= request.form['idx']
+    print('{} {} {} {} {} {}'.format(c,cmin,cmax,smin,smax,parentIdx))
+    auctioneer.countSellerTransaction = auctioneer.countSellerTransaction+1
+    auctioneer.createSellerTransaction(auctioneer.countSellerTransaction, int(parentIdx), int(id), int(c), int(cmin), int(cmax), int(smin), int(smax))
+
+    return redirect('/seller/'+id)
+
 
 @app.route('/confirmBuyerTransaction/<id>', methods=['POST'])
 def confirmBuyerTransaction(id):
