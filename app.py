@@ -184,7 +184,7 @@ class Auctioneer:
     def getSellerPendingTransaction(self, idx):
         b_transaction = []
         sellerLocation = self.sellers[idx-1].coordinate
-        s_transactionIdxs = [sellerTransaction.parentTransactionIdx for sellerTransaction in self.sellerTransaction if sellerTransaction.sellerIdx == idx]
+        s_transactionIdxs = [sellerTransaction.parentTransactionIdx for sellerTransaction in self.sellerTransaction if selleTransaction.sellerIdx == idx]
         for buyerTransaction in self.buyerTransaction:
             if( (buyerTransaction.idx not in s_transactionIdxs) and (buyerTransaction.status == 'pending')):
                 buyerLocation = self.buyers[buyerTransaction.buyerIdx-1].coordinate
@@ -223,9 +223,9 @@ class Auctioneer:
         return True
 
 dummyBuyerTransaction = [BuyerTransaction(1, 1, v=10, vmin=1, vmax=10, bmin=30, bmax=150),
-    BuyerTransaction(2, 1, v=10, vmin=2, vmax=20, bmin=10, bmax=100),
-    BuyerTransaction(3, 2, v=30, vmin=3, vmax=30, bmin=20, bmax=200),
-    BuyerTransaction(4, 1, v=40, vmin=4, vmax=40, bmin=30, bmax=300),
+    BuyerTransaction(2, 2, v=10, vmin=2, vmax=20, bmin=10, bmax=100),
+    BuyerTransaction(3, 3, v=30, vmin=3, vmax=30, bmin=20, bmax=200),
+    BuyerTransaction(4, 4, v=40, vmin=4, vmax=40, bmin=30, bmax=300),
     BuyerTransaction(5, 5, v=50, vmin=5, vmax=50, bmin=40, bmax=400)]
     
 dummySellerTransaction = [SellerTransaction(1, 1, 1, c=3, cmin=1, cmax=30, smin=30, smax=150),
