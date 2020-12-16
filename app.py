@@ -126,7 +126,7 @@ class Auctioneer:
         sellerTransaction.P = round(buyerTransaction.vmax/12 + sellerTransaction.cmin/4 + (2*buyerTransaction.v)/3,2)
         sellerTransaction.R = round(sellerTransaction.cmin/12 + buyerTransaction.vmax/4 + (2*sellerTransaction.c)/3)
 
-        if(sellerTransaction.P < sellerTransaction.R):
+        if((sellerTransaction.P < sellerTransaction.R) or (sellerTransaction.smin > buyerTransaction.bmax) or (buyerTransaction.bmin > serllerTransaction.smax)):
             print("Transction failed!")
             sellerTransaction.status = "failed"
             print(sellerTransaction)
