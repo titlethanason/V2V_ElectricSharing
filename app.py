@@ -184,7 +184,7 @@ class Auctioneer:
     def getSellerPendingTransaction(self, idx):
         b_transaction = []
         sellerLocation = self.sellers[idx-1].coordinate
-        s_transactionIdxs = [sellerTransaction.parentTransactionIdx for sellerTransaction in self.sellerTransaction if selleTransaction.sellerIdx == idx]
+        s_transactionIdxs = [sellerTransaction.parentTransactionIdx for sellerTransaction in self.sellerTransaction if sellerTransaction.sellerIdx == idx]
         for buyerTransaction in self.buyerTransaction:
             if( (buyerTransaction.idx not in s_transactionIdxs) and (buyerTransaction.status == 'pending')):
                 buyerLocation = self.buyers[buyerTransaction.buyerIdx-1].coordinate
