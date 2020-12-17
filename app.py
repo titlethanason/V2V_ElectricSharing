@@ -119,26 +119,19 @@ class Auctioneer:
         sellerLocation = self.sellers[sellerTransaction.sellerIdx-1].coordinate
         buyerLocation = self.buyers[buyerTransaction.buyerIdx-1].coordinate
         sellerTransaction.distance = round(hs.haversine(sellerLocation,buyerLocation), 2)
-        print("distance = "+str(sellerTransaction.distance)+" km")
 
-        print(buyerTransaction)
-        print(sellerTransaction)
         sellerTransaction.P = round(buyerTransaction.vmax/12 + sellerTransaction.cmin/4 + (2*buyerTransaction.v)/3,2)
         sellerTransaction.R = round(sellerTransaction.cmin/12 + buyerTransaction.vmax/4 + (2*sellerTransaction.c)/3)
 
         if((sellerTransaction.P < sellerTransaction.R) or (sellerTransaction.smin > buyerTransaction.bmax) or (buyerTransaction.bmin > sellerTransaction.smax)):
             print("Transction failed!")
             sellerTransaction.status = "failed"
-            print(sellerTransaction)
-            print('----------------------------------------------------')
             return False
         
         sellerTransaction.T = (sellerTransaction.P + sellerTransaction.R)/2
         sellerTransaction.optimalAmount = round((((sellerTransaction.cmax - sellerTransaction.c)/sellerTransaction.cmax)*sellerTransaction.smax + ((1-((sellerTransaction.cmax - buyerTransaction.v)/sellerTransaction.cmax))*buyerTransaction.bmax))/2)
         print("Transction accepted!")
         sellerTransaction.status = 'accepted'
-        print(sellerTransaction)
-        print('----------------------------------------------------')
         return True
     
     def completeBuyerTransaction(self, sellerTransactionIdx):
@@ -222,21 +215,24 @@ class Auctioneer:
         self.computeSellerResponse(newTransaction.idx)
         return True
 
-dummyBuyerTransaction = [BuyerTransaction(1, 1, v=10, vmin=1, vmax=10, bmin=30, bmax=150),
+#dummy data
+dummyBuyerTransaction = [BuyerTransaction(1, 1, v=5, vmin=1, vmax=10, bmin=30, bmax=150),
     BuyerTransaction(2, 2, v=10, vmin=2, vmax=20, bmin=10, bmax=100),
     BuyerTransaction(3, 3, v=30, vmin=3, vmax=30, bmin=20, bmax=200),
     BuyerTransaction(4, 4, v=40, vmin=4, vmax=40, bmin=30, bmax=300),
     BuyerTransaction(5, 5, v=50, vmin=5, vmax=50, bmin=40, bmax=400)]
     
-dummySellerTransaction = [SellerTransaction(1, 1, 1, c=3, cmin=1, cmax=30, smin=30, smax=150),
-    SellerTransaction(2, 1, 2, c=5, cmin=2, cmax=20, smin=10, smax=100),
-    SellerTransaction(3, 3, 3, c=1, cmin=3, cmax=30, smin=20, smax=200),
+dummySellerTransaction = [SellerTransaction(1, 1, 1, c=3, cmin=1, cmax=10, smin=30, smax=150),
+    SellerTransaction(2, 1, 2, c=3, cmin=2, cmax=16, smin=10, smax=100),
+    SellerTransaction(3, 1, 3, c=2, cmin=3, cmax=15, smin=20, smax=200),
     SellerTransaction(4, 4, 4, c=40, cmin=4, cmax=40, smin=30, smax=300),
     SellerTransaction(5, 5, 5, c=50, cmin=5, cmax=50, smin=40, smax=400)]
 
+#dummy data
 buyers = [Buyer((13.7203636, 100.4983167), 1), Buyer((13.7210854,100.4952133), 2), Buyer((13.7057435,100.4809689), 3), Buyer((13.6562446,100.4817984), 4), Buyer((13.7213584,100.5305075), 5)]
 sellers = [Seller((13.651362879156872,100.49486250045186),1), Seller((13.7057435,100.4809689), 2), Seller((13.6562446,100.4817984), 3), Seller((13.7213584,100.5305075), 4), Seller((13.7277753,100.5352955), 5)]
 
+#initial
 auctioneer = Auctioneer()
 auctioneer.buyers = buyers
 auctioneer.sellers = sellers
@@ -244,7 +240,6 @@ auctioneer.buyerTransaction = dummyBuyerTransaction
 auctioneer.sellerTransaction = dummySellerTransaction
 for transaction in auctioneer.sellerTransaction:
     auctioneer.computeSellerResponse(transaction.idx)
-#auctioneer.completeBuyerTransaction(1)
 
 @app.route('/buyer/<id>')
 def buyer(id):
@@ -303,11 +298,6 @@ def confirmBuyerTransaction(id):
     sellerTransactionIdx = int(request.form['idx'])
     auctioneer.completeBuyerTransaction(sellerTransactionIdx)
     return redirect('/buyer/'+id)
-
-@app.route('/bt')
-def bt():
-    global auctioneer
-    return str(auctioneer.getBuyerPendingTransaction(1))
 
 if __name__ == '__main__':
     app.run(debug=True)	
